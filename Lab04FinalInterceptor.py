@@ -46,7 +46,7 @@ class SecurePRNG:
 
     def __init__(self, seed_int):
         # TODO: Initalize the SecurePRNG with the shared secret (seed_int) calculated from Diffie-Hellman key exchange.
-        seed_bytes = seed_int.to_bytes(32, byteorder="big")
+        seed_bytes = seed_int.to_bytes((seed_int.bit_length() + 7) // 8, byteorder="big")
         self.state = hashlib.sha256(seed_bytes).digest()
         
     def generate(self, n_bytes):
@@ -187,7 +187,7 @@ def main():
     print("   [Status]: Shared Secret computed: S = B^a mod P = A^b mod P")
     
     print_step("Step 3: Secure Message Transmission")
-    message = b"<INPUT YOUR MESSAGE HERE>" # Put in your test message here
+    message = b"<Hello Bob, I'm Alice>" # Put in your test message here
     encrypted_msg = xor_crypt(message, alice.session_prng)
     delivered_data = net.send("Alice", "Bob", encrypted_msg)
     final_message = xor_crypt(delivered_data, bob.session_prng)
